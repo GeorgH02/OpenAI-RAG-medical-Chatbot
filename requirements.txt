@@ -1,0 +1,7 @@
+openai
+langchain
+langchainhub
+langchain_openai
+streamlit
+llama_index
+pypdf2
