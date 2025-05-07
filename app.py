@@ -1,6 +1,7 @@
 # second app-file to implement OpenAI-Agent from tools in interface
 
-# before first execution: terminal: pip install -r requirements.txt, then: streamlit run app.py
+# before first execution: terminal: pip install -r requirements.txt, 
+#then: streamlit run app.py
 import os
 
 import streamlit as st
@@ -88,52 +89,50 @@ Please take it into account when deciding if you should call a tool or not.
 # creating OpenAI-Agent
 openai_llama_agent = OpenAIAgent.from_tools(tools, llm=llm, verbose=True, system_prompt=openai_llama_system_prompt)
 
-# Streamed response emulator
+# streamed response emulator
 def response_generator():
-
-    # set response to the answer of the chatbot and convert it to a string
-
+    # setting response to the answer of the chatbot and convert it to a string
     hist = openai_llama_agent.chat_history[5:]
     response = openai_llama_agent.chat(hist, prompt)
     response = str(response)
     print(response)
-    # display the output with 0.05 seconds of pause between each character
+    # displaying the output with 0.05 seconds of pause between each character
     for word in response.split():
         yield word + " "
         time.sleep(0.05)
 
-# Add logo to top left corner with link to AstraZeneca-homepage
+# adding logo to top left corner with link to AstraZeneca-homepage
 logo_path = "./astrazeneca_logo.png" 
 st.logo(logo_path, link="https://www.astrazeneca.at/")
 
-# Add title and text
+# adding title and text
 st.title("Astrabot")
 st.text("Ich bin ein Chatbot.")
 st.text("Ich kann dir bei allen Anliegen zum Thema Krebsvorsorge oder Lynparza weiterhelfen.")
 st.text("Frag mich etwas!")
 
-# Initialize chat history
+# initializing chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
-# initialize avatars
+# initializing avatars
 if "avatars" not in st.session_state:
     st.session_state.avatars = {"u": "👨🏻‍💻", "a": "🤖"}
 
-# Display chat messages from history on app rerun
+# displaying chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar=st.session_state.avatars[message["role"]]):
         st.markdown(message["content"])
 
-# Accept user input
+# accepting user input
 if prompt := st.chat_input("Stell mir eine Frage"):
-    # Add user message to chat history
+    # adding user message to chat history
     st.session_state.messages.append({"role": "u", "content": prompt})
-    # Display user message in chat message container
+    # showing user message in chat message container
     with st.chat_message("u", avatar=st.session_state.avatars["u"]):
         st.markdown(prompt)
 
-    # Display assistant response in chat message container
+    # showing assistant response in chat message container
     with st.chat_message("a", avatar=st.session_state.avatars["a"]):
         response = st.write_stream(response_generator())
-    # Add assistant response to chat history
+    # adding assistant response to chat history
     st.session_state.messages.append({"role": "a", "content": response})
